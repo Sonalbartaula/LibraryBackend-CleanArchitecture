@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryBackend_CleanArchitecture.Repositories
 {
-    public class DashboardRepository
+    public class DashboardRepository : IDashboardRepository
     {
         private readonly LibraryDbContext _context;
         public DashboardRepository(LibraryDbContext context)

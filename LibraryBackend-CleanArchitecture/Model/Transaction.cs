@@ -37,6 +37,7 @@ namespace LibraryBackend_CleanArchitecture.Model
         public TransactionStatus Status { get; set; } = TransactionStatus.Active;
 
         public decimal Fine { get; set; } = 0;
+        
 
         [NotMapped]
         public string ComputedStatus
