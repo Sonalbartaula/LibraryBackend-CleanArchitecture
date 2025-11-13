@@ -43,6 +43,53 @@ namespace LibraryBackend_CleanArchitecture.Repositories
                     Value = b.IssuedCopies
                 })
                 .ToListAsync();
+            var categoryDistribution = await _context.Books
+                .GroupBy(b => b.Categories)
+                .Select(g => new KeyValueDto
+                {
+                    Key = g.Key,
+                    Value = g.Count()
+                })
+                .ToListAsync();
+            var monthlyTrendsRaw = await _context.Transactions
+                .GroupBy(t => new { t.CheckoutDate.Year, t.CheckoutDate.Month })
+                .Select(g => new
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    Count = g.Count()
+                })
+                .ToListAsync(); // materialize first — EF Core can translate this part
+
+            var monthlyTrends = monthlyTrendsRaw
+                .Select(g => new KeyValueDto
+                {
+                    Key = $"{g.Year}-{g.Month:D2}", // now safely format in memory
+                    Value = g.Count
+                })
+                .OrderBy(x => x.Key)
+                .ToList();
+
+            
+            var memberGrowthRaw = await _context.Students
+                .GroupBy(m => new { m.JoinedDate.Year, m.JoinedDate.Month })
+                .Select(g => new
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    Count = g.Count()
+                })
+                .ToListAsync(); // same here
+
+            var memberGrowth = memberGrowthRaw
+                .Select(g => new KeyValueDto
+                {
+                    Key = $"{g.Year}-{g.Month:D2}",
+                    Value = g.Count
+                })
+                .OrderBy(x => x.Key)
+                .ToList();
+
 
 
             return new ReportsAnalyticsDto
@@ -52,7 +99,10 @@ namespace LibraryBackend_CleanArchitecture.Repositories
                 BooksInCollection = totalBooks,
                 AverageDailyCheckouts = Math.Round(avgDailyCheckouts, 1),
                 OverdueBooksCount = overdueBooks,
-                PopularBooks = popularBooks 
+                PopularBooks = popularBooks,
+                MonthlyTrends = monthlyTrends,
+                CategoryDistribution = categoryDistribution,
+                MemberGrowth = memberGrowth
             };
         }
     }
