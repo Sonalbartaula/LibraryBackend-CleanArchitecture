@@ -66,6 +66,15 @@ namespace LibraryBackend_CleanArchitecture.Repositories
             _context.Students.Update(student);
         }
 
+        public async Task DeleteStudentAsync(int id)
+        {
+            var student = await _context.Students.FindAsync(id);
+            if (student != null)
+            {
+                _context.Students.Remove(student);
+            }
+        }
+
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

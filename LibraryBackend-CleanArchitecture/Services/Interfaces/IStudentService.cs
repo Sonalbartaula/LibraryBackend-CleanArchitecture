@@ -9,5 +9,7 @@ namespace LibraryBackend_CleanArchitecture.Services.Interfaces
         Task<IEnumerable<Student>> SearchStudentsAsync(string searchText, string memberType, string status);
         Task AddStudentAsync(Student student);
         Task UpdateStudentAsync(Student student);
+
+        Task DeleteStudentAsync(int id);
     }
 }

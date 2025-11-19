@@ -23,15 +23,16 @@ namespace LibraryBackend_CleanArchitecture.Controllers
 
 
         [HttpPost("register")]
-        public async Task<ActionResult<User?>> Register(UserDto request)
+        public async Task<ActionResult<User?>> Register([FromBody] UserDto request)
         {
             var user = await service.RegisterAsync(request);
-            if (User is null)
 
+            if (user is null)
                 return BadRequest("User already exists.");
 
             user.Username = request.Username;
             user.PasswordHash = new PasswordHasher<User>().HashPassword(user, request.Password);
+
             return Ok(user);
         }
 
@@ -46,14 +47,26 @@ namespace LibraryBackend_CleanArchitecture.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+        public async Task<ActionResult<TokenResponseDto>> RefreshToken()
         {
-            var token = await service.RefreshTokenAsync(request);
+            // Read Authorization header
+            var authHeader = Request.Headers["Authorization"].ToString();
+
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+                return BadRequest("Missing or invalid Authorization header");
+
+            // Extract refresh token
+            var refreshToken = authHeader["Bearer ".Length..].Trim();
+
+            // Call service
+            var token = await service.RefreshTokenAsync(refreshToken);
+
             if (token is null)
                 return BadRequest("Invalid/Expired Token");
-            return Ok(token);
 
+            return Ok(token);
         }
+
         [HttpGet("Auth-Endpoint")]
         [Authorize]
         public IActionResult AuthCheck()

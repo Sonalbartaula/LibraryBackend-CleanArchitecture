@@ -29,8 +29,8 @@ namespace LibraryBackend_CleanArchitecture.Model
         public string Isbn { get; set; }
         public string BookTitle { get; set; }
 
-        public DateTime CheckoutDate { get; set; } = DateTime.Now;
-        public DateTime DueDate { get; set; } = DateTime.Now.AddDays(14);
+        public DateTime CheckoutDate { get; set; } = DateTime.UtcNow;
+        public DateTime DueDate { get; set; } = DateTime.UtcNow.AddDays(14);
         public DateTime? ReturnDate { get; set; }
         public Issuestatus IssueStatus { get; set; } = Issuestatus.Issued;
 
@@ -46,7 +46,7 @@ namespace LibraryBackend_CleanArchitecture.Model
             {
                 if (ReturnDate.HasValue)
                     return "Returned";
-                if (DateTime.Now > DueDate)
+                if (DateTime.UtcNow > DueDate)
                     return "Overdue";
                 return "Active";
             }
@@ -59,7 +59,7 @@ namespace LibraryBackend_CleanArchitecture.Model
             {
                 if (ReturnDate.HasValue)
                     return "Returned";
-                var remaining = (DueDate - DateTime.Now).TotalDays;
+                var remaining = (DueDate - DateTime.UtcNow).TotalDays;
                 return remaining > 0
                     ? $"{Math.Ceiling(remaining)} days left"
                     : $"{Math.Abs(Math.Ceiling(remaining))} days overdue";

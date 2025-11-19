@@ -51,5 +51,11 @@ namespace LibraryBackend_CleanArchitecture.Services
             await _studentRepository.UpdateStudentAsync(student);
             await _studentRepository.SaveChangesAsync();
         }
+
+        public async Task DeleteStudentAsync(int id)
+        {
+            await _studentRepository.DeleteStudentAsync(id);
+            await _studentRepository.SaveChangesAsync();
+        }
     }
 }

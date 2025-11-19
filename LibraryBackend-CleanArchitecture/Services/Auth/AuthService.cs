@@ -70,7 +70,7 @@ namespace LibraryBackend_CleanArchitecture.Services
             rng.GetBytes(randomNumber);
             var refreshToken = Convert.ToBase64String(randomNumber);
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiry = DateTime.Now.AddDays(1);
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(1);
             await context.SaveChangesAsync();
             return refreshToken;
         }
@@ -90,7 +90,7 @@ namespace LibraryBackend_CleanArchitecture.Services
                 issuer: configuration.GetValue<string>("AppSettings:Issuer"),
                 audience: configuration.GetValue<string>("AppSettings:Audience"),
                 claims: claims,
-                expires: DateTime.Now.AddDays(1),
+                expires: DateTime.UtcNow.AddDays(1),
                 signingCredentials: creds
                 );
             return new JwtSecurityTokenHandler().WriteToken(TokenDiscriptor);
@@ -98,18 +98,23 @@ namespace LibraryBackend_CleanArchitecture.Services
 
         }
 
-        public async Task<TokenResponseDto?> RefreshTokenAsync(RefreshTokenRequestDto request)
+        public async Task<TokenResponseDto?> RefreshTokenAsync(string refreshToken)
         {
-            var user = await context.Users.FindAsync(request.UserId);
-            if (user is null || user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiry <= DateTime.UtcNow)
+            // Find user who owns this refresh token
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
 
+            if (user is null || user.RefreshTokenExpiry <= DateTime.UtcNow)
                 return null;
-            var token = new TokenResponseDto
+
+            // Create new access + refresh token
+            var tokenResponse = new TokenResponseDto
             {
                 AccessToken = CreateToken(user),
                 RefreshToken = await GenerateAndSaveRefreshToken(user)
             };
-            return token;
+
+            return tokenResponse;
         }
     }
 }

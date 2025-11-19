@@ -52,5 +52,12 @@ namespace LibraryBackend_CleanArchitecture.Controllers
             await _studentService.UpdateStudentAsync(student);
             return Ok("Student updated successfully");
         }
+
+        [HttpDelete("Delete")]
+        public async Task<IActionResult>Delete(int id)
+        {
+            await _studentService.DeleteStudentAsync(id);
+            return Ok("Student Deleted Successfully");
+        }
     }
 }
