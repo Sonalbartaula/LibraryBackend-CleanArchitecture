@@ -3,6 +3,7 @@ using LibraryBackend_CleanArchitecture.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 
 namespace LibraryBackend_CleanArchitecture.Controllers
 {
@@ -21,6 +22,13 @@ namespace LibraryBackend_CleanArchitecture.Controllers
         public async Task<IActionResult> GetAllBooks()
         {
             var books = await _bookservice.GetAllBooksAsync();
+            return Ok(books);
+        }
+
+        [HttpGet("GetABook")]
+        public async Task<IActionResult> GetABook(string name)
+        {
+            var books = await _bookservice.GetABookAsync(name);
             return Ok(books);
         }
 

@@ -2,6 +2,7 @@
 using LibraryBackend_CleanArchitecture.Model;
 using LibraryBackend_CleanArchitecture.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 
 namespace LibraryBackend_CleanArchitecture.Repositories
 {
@@ -14,12 +15,17 @@ namespace LibraryBackend_CleanArchitecture.Repositories
             _context = context;
         }
 
-        public async Task<transaction?> GetByIdAsync(int id)
+        public async Task<Transaction?> GetByIsbn(string isbn)
         {
-            return await _context.Transactions.FindAsync(id);
+            return await _context.Transactions.FirstOrDefaultAsync(book=>book.Isbn==isbn);
+        }
+        public async Task AddAsync(Transaction transaction)
+        {
+            await _context.Transactions.AddAsync(transaction);
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<transaction>> GetActiveLoansAsync(string? searchText, string? status)
+        public async Task<IEnumerable<Transaction>> GetActiveLoansAsync(string? searchText, string? status)
         {
             var query = _context.Transactions.AsQueryable();
 
@@ -44,7 +50,7 @@ namespace LibraryBackend_CleanArchitecture.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<transaction>> GetTransactionHistoryAsync(string? searchText, string? type)
+        public async Task<IEnumerable<Transaction>> GetTransactionHistoryAsync(string? searchText, string? type)
         {
             var query = _context.Transactions.AsQueryable();
 

@@ -15,7 +15,7 @@ namespace LibraryBackend_CleanArchitecture.Model
         Overdue
     }
 
-    public class transaction
+    public class Transaction
     {
         [Key]
         public int Id { get; set; }

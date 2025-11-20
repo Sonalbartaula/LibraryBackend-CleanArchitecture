@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace LibraryBackend_CleanArchitecture.Model
 {
@@ -7,7 +8,8 @@ namespace LibraryBackend_CleanArchitecture.Model
             Available,
             Unavailable
         }
-        public class Book
+        [Index(nameof(ISBN), IsUnique = true)]
+    public class Book
         {
             [Key]
             public int Id { get; set; }

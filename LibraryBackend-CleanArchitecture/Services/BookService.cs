@@ -25,6 +25,11 @@ namespace LibraryBackend_CleanArchitecture.Services
             return await _bookRepository.GetByIdAsync(id);
         }
 
+        public async Task<Book> GetABookAsync(string name)
+        {
+            return await _bookRepository.GetABookAsync(name);
+        }
+
         public async Task AddBookAsync(Book book)
         {
             var returnbook = await _bookRepository.AddBookAsync(book);

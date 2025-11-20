@@ -10,10 +10,12 @@ namespace LibraryBackend_CleanArchitecture.Controllers
     public class TransactionController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
+        private readonly IBookService _bookService;
 
-        public TransactionController(ITransactionService transactionService)
+        public TransactionController(ITransactionService transactionService, IBookService bookService)
         {
             _transactionService = transactionService;
+            _bookService = bookService;
         }
 
         
@@ -26,6 +28,10 @@ namespace LibraryBackend_CleanArchitecture.Controllers
 
             if (string.IsNullOrEmpty(request.MemberName) || string.IsNullOrEmpty(request.BookTitle))
                 return BadRequest("Member name and book title are required.");
+
+            var bookAvaible = await _bookService.GetABookAsync(request.BookTitle);
+            if (bookAvaible == null)
+                return NotFound("Book not found.");
 
             var transaction = await _transactionService.CheckoutBookAsync(
                 request.MemberName,
@@ -40,11 +46,11 @@ namespace LibraryBackend_CleanArchitecture.Controllers
         }
 
         
-        [HttpPut("Return/{id}")]
+        [HttpPut("Return/{isbn}")]
         [Authorize(Roles = "Admin,Librarian")]
-        public async Task<IActionResult> ReturnBook(int id)
+        public async Task<IActionResult> ReturnBook(string isbn)
         {
-            var transaction = await _transactionService.ReturnBookAsync(id);
+            var transaction = await _transactionService.ReturnBookAsync(isbn);
             if (transaction == null)
                 return NotFound("Transaction not found or already returned.");
 
@@ -52,11 +58,11 @@ namespace LibraryBackend_CleanArchitecture.Controllers
         }
 
        
-        [HttpPut("Renew/{id}")]
+        [HttpPut("Renew/{isbn}")]
         [Authorize(Roles = "Admin,Librarian")]
-        public async Task<IActionResult> RenewLoan(int id)
+        public async Task<IActionResult> RenewLoan(string isbn)
         {
-            var transaction = await _transactionService.RenewLoanAsync(id);
+            var transaction = await _transactionService.RenewLoanAsync(isbn);
             if (transaction == null)
                 return NotFound("Transaction not found or cannot be renewed.");
 

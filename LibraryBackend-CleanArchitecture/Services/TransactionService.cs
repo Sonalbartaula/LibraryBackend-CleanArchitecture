@@ -19,9 +19,10 @@ namespace LibraryBackend_CleanArchitecture.Services
            
         }
 
-        public async Task<transaction> CheckoutBookAsync(string memberName, string bookTitle, string isbn)
+        public async Task<Transaction> CheckoutBookAsync(string memberName, string bookTitle, string isbn)
         {
-            var transaction = new transaction
+            
+            var transaction = new Transaction
             {
                 MemberName = memberName,
                 BookName = bookTitle,
@@ -31,7 +32,7 @@ namespace LibraryBackend_CleanArchitecture.Services
                 DueDate = DateTime.UtcNow.AddDays(14),
                 Status = TransactionStatus.Active
             };
-
+            await _transactionRepository.AddAsync(transaction);
             var activity = new Activity
             {
                 Type = ActivityType.BookIssued,             // Enum type for the activity
@@ -46,9 +47,9 @@ namespace LibraryBackend_CleanArchitecture.Services
             return transaction;
         }
 
-        public async Task<transaction?> ReturnBookAsync(int transactionId)
+        public async Task<Transaction?> ReturnBookAsync(string isbn)
         {
-            var transaction = await _transactionRepository.GetByIdAsync(transactionId);
+            var transaction = await _transactionRepository.GetByIsbn(isbn);
             if (transaction == null || transaction.ReturnDate.HasValue)
                 return null;
 
@@ -77,9 +78,9 @@ namespace LibraryBackend_CleanArchitecture.Services
             return transaction;
         }
 
-        public async Task<transaction?> RenewLoanAsync(int transactionId)
+        public async Task<Transaction?> RenewLoanAsync(string isbn)
         {
-            var transaction = await _transactionRepository.GetByIdAsync(transactionId);
+            var transaction = await _transactionRepository.GetByIsbn(isbn);
             if (transaction == null || transaction.ReturnDate.HasValue)
                 return null;
 
@@ -97,12 +98,12 @@ namespace LibraryBackend_CleanArchitecture.Services
             return transaction;
         }
 
-        public async Task<IEnumerable<transaction>> GetActiveLoansAsync(string? searchText, string? status)
+        public async Task<IEnumerable<Transaction>> GetActiveLoansAsync(string? searchText, string? status)
         {
             return await _transactionRepository.GetActiveLoansAsync(searchText, status);
         }
 
-        public async Task<IEnumerable<transaction>> GetTransactionHistoryAsync(string? searchText, string? type)
+        public async Task<IEnumerable<Transaction>> GetTransactionHistoryAsync(string? searchText, string? type)
         {
             return await _transactionRepository.GetTransactionHistoryAsync(searchText, type);
         }

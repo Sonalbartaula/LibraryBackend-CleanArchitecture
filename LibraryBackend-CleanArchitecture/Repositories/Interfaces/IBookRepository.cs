@@ -9,6 +9,7 @@ namespace LibraryBackend_CleanArchitecture.Repositories.Interfaces
         Task<Book>AddBookAsync(Book book);
         Task UpdateBookAsync(Book book);
         Task DeleteBookAsync(int id);
+        Task<Book> GetABookAsync(string name);
         Task<IEnumerable<Book>> SearchBooksAsync(string searchText, string status, string categories);
         Task<int> SaveChangesAsync();
 

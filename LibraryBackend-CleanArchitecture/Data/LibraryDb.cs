@@ -34,7 +34,7 @@ namespace LibraryBackend_CleanArchitecture.Data
         //    base.OnModelCreating(modelBuilder);
         //}
 
-        public DbSet<transaction> Transactions { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
 
 
 
