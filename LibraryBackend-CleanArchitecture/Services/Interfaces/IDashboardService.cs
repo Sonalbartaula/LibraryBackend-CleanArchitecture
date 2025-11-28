@@ -11,6 +11,11 @@ namespace LibraryBackend_CleanArchitecture.Services.Interfaces
         Task<int> GetActiveMembersAsync();
         Task<int> GetIssuedBooksCountAsync();
         Task<int> GetOverdueBooksCountAsync();
+        // New dynamic stats for the modern dashboard
+        Task<int> GetBooksAddedThisMonthAsync();
+        Task<int> GetMembersJoinedThisMonthAsync();
+        Task<int> GetDueSoonCountAsync();           // Books due in next 7 days
+        Task<int> GetRemindersSentCountAsync();
         Task<IEnumerable<Book>> GetPopularBooksAsync(int count);
         Task<IEnumerable<Activity>> GetRecentActivitiesAsync(int count);
 

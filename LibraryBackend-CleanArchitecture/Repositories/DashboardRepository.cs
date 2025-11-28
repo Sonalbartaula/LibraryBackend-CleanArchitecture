@@ -42,7 +42,40 @@ namespace LibraryBackend_CleanArchitecture.Repositories
         //        .Take(count)
         //        .ToListAsync();
         //}
+        // NEW: Books added this month
+        public async Task<int> GetBooksAddedThisMonthAsync()
+        {
+            var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+            return await _context.Books
+                .CountAsync(b => b.AddedDate >= startOfMonth);
+        }
 
+        // NEW: Members joined this month
+        public async Task<int> GetMembersJoinedThisMonthAsync()
+        {
+            var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+            return await _context.Students
+                .CountAsync(s => s.JoinedDate >= startOfMonth && s.Status == Status.Active);
+        }
+
+        // NEW: Books due soon (next 7 days)
+        public async Task<int> GetDueSoonCountAsync()
+        {
+            var now = DateTime.UtcNow;
+            var nextWeek = now.AddDays(7);
+
+            return await _context.Transactions
+                .CountAsync(t => t.IssueStatus == Issuestatus.Issued
+                              && t.DueDate >= now
+                              && t.DueDate <= nextWeek);
+        }
+
+        
+        public async Task<int> GetRemindersSentCountAsync()
+        {
+            
+            return await GetOverdueBooksCountAsync(); // temporary fallback
+        }
         public async Task<IEnumerable<Activity>> GetRecentActivitiesAsync(int count)
         {
             return await _context.Activities

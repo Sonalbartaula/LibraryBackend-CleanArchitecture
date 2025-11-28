@@ -1,6 +1,5 @@
-﻿using LibraryBackend_CleanArchitecture.Services.Interfaces;
-
-using Microsoft.AspNetCore.Http;
+﻿using LibraryBackend_CleanArchitecture.Model.Dashboard;
+using LibraryBackend_CleanArchitecture.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryBackend_CleanArchitecture.Controllers
@@ -10,52 +9,66 @@ namespace LibraryBackend_CleanArchitecture.Controllers
     public class DashboardController : ControllerBase
     {
         private readonly IDashboardService _dashboardService;
+
         public DashboardController(IDashboardService dashboardService)
         {
             _dashboardService = dashboardService;
         }
-        [HttpGet("RecentActivities")]
-        public async Task<IActionResult> GetRecentActivities(int count = 5)
+
+        // MAIN ENDPOINT — RECOMMENDED (One call = everything)
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetDashboardSummary()
         {
-            var activities = await _dashboardService.GetRecentActivitiesAsync(count);
-            return Ok(activities);
+            try
+            {
+                var summary = await _dashboardService.GetDashboardSummaryAsync();
+                return Ok(summary);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to load dashboard data", error = ex.Message });
+            }
         }
 
-        [HttpGet("PopularBooks")]
-        public async Task<IActionResult> GetPopularBooks([FromQuery] int count = 5)
-        {
-            var popularBooks = await _dashboardService.GetPopularBooksAsync(count);
-            return Ok(popularBooks);
-        }
-
-        [HttpGet("TotalBooks")]
+        // Optional: Keep individual endpoints if other parts of app use them
+        [HttpGet("total-books")]
         public async Task<IActionResult> GetTotalBooks()
-        {
-            var totalBooks = await _dashboardService.GetTotalBooksAsync();
-            return Ok(totalBooks);
-        }
+            => Ok(await _dashboardService.GetTotalBooksAsync());
 
-        [HttpGet("ActiveMembers")]
+        [HttpGet("active-members")]
         public async Task<IActionResult> GetActiveMembers()
-        {
-            var activeMembers = await _dashboardService.GetActiveMembersAsync();
-            return Ok(activeMembers);
-        }
+            => Ok(await _dashboardService.GetActiveMembersAsync());
 
-        [HttpGet("BooksIssued")]
-        public async Task<IActionResult> GetIssuedBooks()
-        {
-            var booksIssued = await _dashboardService.GetIssuedBooksCountAsync();
-            return Ok(booksIssued);
+        [HttpGet("books-issued")]
+        public async Task<IActionResult> GetBooksIssued()
+            => Ok(await _dashboardService.GetIssuedBooksCountAsync());
 
-        }
-
-        [HttpGet("OverdueBooks")]
+        [HttpGet("overdue-books")]
         public async Task<IActionResult> GetOverdueBooks()
-        {
-            var overdueBooks = await _dashboardService.GetOverdueBooksCountAsync();
-            return Ok(overdueBooks);
-        }
+            => Ok(await _dashboardService.GetOverdueBooksCountAsync());
+
+        [HttpGet("books-added-this-month")]
+        public async Task<IActionResult> GetBooksAddedThisMonth()
+            => Ok(await _dashboardService.GetBooksAddedThisMonthAsync());
+
+        [HttpGet("members-joined-this-month")]
+        public async Task<IActionResult> GetMembersJoinedThisMonth()
+            => Ok(await _dashboardService.GetMembersJoinedThisMonthAsync());
+
+        [HttpGet("due-soon")]
+        public async Task<IActionResult> GetDueSoonCount()
+            => Ok(await _dashboardService.GetDueSoonCountAsync());
+
+        [HttpGet("reminders-sent")]
+        public async Task<IActionResult> GetRemindersSent()
+            => Ok(await _dashboardService.GetRemindersSentCountAsync());
+
+        [HttpGet("recent-activities")]
+        public async Task<IActionResult> GetRecentActivities([FromQuery] int count = 10)
+            => Ok(await _dashboardService.GetRecentActivitiesAsync(count));
+
+        [HttpGet("popular-books")]
+        public async Task<IActionResult> GetPopularBooks([FromQuery] int count = 5)
+            => Ok(await _dashboardService.GetPopularBooksAsync(count));
     }
 }
-

@@ -10,6 +10,11 @@ namespace LibraryBackend_CleanArchitecture.Repositories.Interfaces
         Task<int> GetActiveMembersAsync();
         Task<int> GetIssuedBooksCountAsync();
         Task<int> GetOverdueBooksCountAsync();
+
+        Task<int> GetBooksAddedThisMonthAsync();
+        Task<int> GetMembersJoinedThisMonthAsync();
+        Task<int> GetDueSoonCountAsync();
+        Task<int> GetRemindersSentCountAsync();
         Task<IEnumerable<Activity>> GetRecentActivitiesAsync(int count);
 
         //Task<IEnumerable<Transaction>> GetRecentTransactionsAsync(int count);

@@ -47,7 +47,9 @@ namespace LibraryBackend_CleanArchitecture.Services
 
 
         public async Task<TokenResponseDto> LoginAsync(UserDto request)
+
         {
+            Console.WriteLine(request.Username);
             if (await context.Users.FirstOrDefaultAsync(u => u.Username == request.Username) is not User user)
             {
                 return null; 
