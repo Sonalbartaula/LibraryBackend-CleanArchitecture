@@ -90,6 +90,17 @@ namespace LibraryBackend_CleanArchitecture.Repositories
                 .OrderBy(x => x.Key)
                 .ToList();
 
+            var topMembers = await _context.Transactions
+                .GroupBy(t => t.MemberName) 
+                .Select(g => new KeyValueDto
+                {
+                    Key = g.Key, // Student name
+                    Value = g.Count() // Number of transactions/borrows
+                })
+                .OrderByDescending(x => x.Value)
+                .Take(3)
+                .ToListAsync();
+
 
 
             return new ReportsAnalyticsDto
@@ -102,7 +113,8 @@ namespace LibraryBackend_CleanArchitecture.Repositories
                 PopularBooks = popularBooks,
                 MonthlyTrends = monthlyTrends,
                 CategoryDistribution = categoryDistribution,
-                MemberGrowth = memberGrowth
+                MemberGrowth = memberGrowth,
+                TopMembers = topMembers
             };
         }
     }

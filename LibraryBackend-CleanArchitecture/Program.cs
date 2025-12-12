@@ -13,6 +13,7 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -84,17 +85,21 @@ builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReact",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173") // your Vite frontend
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAllFrontends", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "https://library-frontend-sandy-phi.vercel.app" // deployed frontend
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); 
+    });
 });
 
 var app = builder.Build();
-app.UseCors("AllowReact");
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -104,6 +109,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAllFrontends");
 app.UseAuthentication();
 app.UseAuthorization();
 

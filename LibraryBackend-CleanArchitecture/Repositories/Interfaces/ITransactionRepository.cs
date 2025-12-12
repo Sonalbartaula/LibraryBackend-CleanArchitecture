@@ -11,6 +11,7 @@ namespace LibraryBackend_CleanArchitecture.Repositories.Interfaces
 
         // Used in service/controller for active loans
         Task<IEnumerable<Transaction>> GetActiveLoansAsync(string? searchText, string? status);
+        
 
         // Used in service/controller for transaction history
         Task<IEnumerable<Transaction>> GetTransactionHistoryAsync(string? searchText, string? type);

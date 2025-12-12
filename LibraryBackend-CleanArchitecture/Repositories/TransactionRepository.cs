@@ -2,6 +2,7 @@
 using LibraryBackend_CleanArchitecture.Model;
 using LibraryBackend_CleanArchitecture.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 using System.Drawing;
 
 namespace LibraryBackend_CleanArchitecture.Repositories
@@ -49,7 +50,6 @@ namespace LibraryBackend_CleanArchitecture.Repositories
 
             return await query.ToListAsync();
         }
-
         public async Task<IEnumerable<Transaction>> GetTransactionHistoryAsync(string? searchText, string? type)
         {
             var query = _context.Transactions.AsQueryable();

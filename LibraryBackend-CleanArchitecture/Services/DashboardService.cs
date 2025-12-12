@@ -27,7 +27,7 @@ namespace LibraryBackend_CleanArchitecture.Services
                 MembersJoinedThisMonth = await _dashboardRepository.GetMembersJoinedThisMonthAsync(),
                 DueSoonCount = await _dashboardRepository.GetDueSoonCountAsync(),
                 RemindersSent = await _dashboardRepository.GetRemindersSentCountAsync(),
-                RecentActivities = await _dashboardRepository.GetRecentActivitiesAsync(10),
+                RecentActivities = await _dashboardRepository.GetRecentActivitiesAsync(5),
                 PopularBooks = await _dashboardRepository.GetPopularBooksAsync(5)
             };
         }
@@ -60,7 +60,7 @@ namespace LibraryBackend_CleanArchitecture.Services
         public async Task<IEnumerable<Book>> GetPopularBooksAsync(int count = 5)
             => await _dashboardRepository.GetPopularBooksAsync(count);
 
-        public async Task<IEnumerable<Activity>> GetRecentActivitiesAsync(int count = 10)
+        public async Task<IEnumerable<Activity>> GetRecentActivitiesAsync(int count = 5)
             => await _dashboardRepository.GetRecentActivitiesAsync(count);
     }
 }

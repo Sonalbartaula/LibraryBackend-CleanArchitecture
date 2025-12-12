@@ -64,7 +64,7 @@ namespace LibraryBackend_CleanArchitecture.Controllers
             => Ok(await _dashboardService.GetRemindersSentCountAsync());
 
         [HttpGet("recent-activities")]
-        public async Task<IActionResult> GetRecentActivities([FromQuery] int count = 10)
+        public async Task<IActionResult> GetRecentActivities([FromQuery] int count = 5)
             => Ok(await _dashboardService.GetRecentActivitiesAsync(count));
 
         [HttpGet("popular-books")]

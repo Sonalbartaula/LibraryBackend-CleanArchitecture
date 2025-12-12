@@ -45,19 +45,17 @@ namespace LibraryBackend_CleanArchitecture.Controllers
             return Ok(transaction);
         }
 
-        
-        [HttpPut("Return/{isbn}")]
-        [Authorize(Roles = "Admin,Librarian")]
-        public async Task<IActionResult> ReturnBook(string isbn)
-        {
-            var transaction = await _transactionService.ReturnBookAsync(isbn);
-            if (transaction == null)
-                return NotFound("Transaction not found or already returned.");
 
-            return Ok(transaction);
-        }
+        [HttpPut("Return/{isbn}")] 
+        [Authorize(Roles = "Admin,Librarian")] 
+        public async Task<IActionResult> ReturnBook(string isbn) {
+        var transaction = await _transactionService.ReturnBookAsync(isbn); 
+            if (transaction == null) 
+                return 
+                    NotFound("Transaction not found or already returned.");
+            return Ok(transaction); }
 
-       
+
         [HttpPut("Renew/{isbn}")]
         [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> RenewLoan(string isbn)
@@ -94,5 +92,11 @@ namespace LibraryBackend_CleanArchitecture.Controllers
         public string MemberName { get; set; } = string.Empty;
         public string BookTitle { get; set; } = string.Empty;
         public string Isbn { get; set; } = string.Empty;
+    }
+
+    public class ReturnRequest
+    {
+        public string Isbn { get; set; } = string.Empty;
+        public string MemberName { get; set; } = string.Empty; 
     }
 }
