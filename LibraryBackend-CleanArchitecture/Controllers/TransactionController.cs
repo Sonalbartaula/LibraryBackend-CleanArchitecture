@@ -18,7 +18,6 @@ namespace LibraryBackend_CleanArchitecture.Controllers
             _bookService = bookService;
         }
 
-        
         [HttpPost("Checkout")]
         [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> CheckoutBook([FromBody] CheckoutRequest request)
@@ -29,8 +28,8 @@ namespace LibraryBackend_CleanArchitecture.Controllers
             if (string.IsNullOrEmpty(request.MemberName) || string.IsNullOrEmpty(request.BookTitle))
                 return BadRequest("Member name and book title are required.");
 
-            var bookAvaible = await _bookService.GetABookAsync(request.BookTitle);
-            if (bookAvaible == null)
+            var bookAvailable = await _bookService.GetABookAsync(request.BookTitle);
+            if (bookAvailable == null)
                 return NotFound("Book not found.");
 
             var transaction = await _transactionService.CheckoutBookAsync(
@@ -45,29 +44,82 @@ namespace LibraryBackend_CleanArchitecture.Controllers
             return Ok(transaction);
         }
 
-
-        [HttpPut("Return/{isbn}")] 
-        [Authorize(Roles = "Admin,Librarian")] 
-        public async Task<IActionResult> ReturnBook(string isbn) {
-        var transaction = await _transactionService.ReturnBookAsync(isbn); 
-            if (transaction == null) 
-                return 
-                    NotFound("Transaction not found or already returned.");
-            return Ok(transaction); }
-
-
-        [HttpPut("Renew/{isbn}")]
+        
+        [HttpPut("Return/{transactionId}")]
         [Authorize(Roles = "Admin,Librarian")]
-        public async Task<IActionResult> RenewLoan(string isbn)
+        public async Task<IActionResult> ReturnBook(int transactionId)
         {
-            var transaction = await _transactionService.RenewLoanAsync(isbn);
-            if (transaction == null)
-                return NotFound("Transaction not found or cannot be renewed.");
+            try
+            {
+                var transaction = await _transactionService.ReturnBookByTransactionIdAsync(transactionId);
 
-            return Ok(transaction);
+                if (transaction == null)
+                    return NotFound("Transaction not found or already returned.");
+
+                return Ok(new
+                {
+                    message = "Book returned successfully",
+                    transaction
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        
+        //[HttpPost("Return")]
+        //[Authorize(Roles = "Admin,Librarian")]
+        //public async Task<IActionResult> ReturnBookByMemberAndIsbn([FromBody] ReturnRequest request)
+        //{
+        //    try
+        //    {
+        //        if (string.IsNullOrEmpty(request.MemberName) || string.IsNullOrEmpty(request.Isbn))
+        //            return BadRequest("Member name and ISBN are required.");
+
+        //        var transaction = await _transactionService.ReturnBookByMemberAndIsbnAsync(
+        //            request.MemberName,
+        //            request.Isbn
+        //        );
+
+        //        if (transaction == null)
+        //            return NotFound("Active transaction not found for this member and book.");
+
+        //        return Ok(new
+        //        {
+        //            message = "Book returned successfully",
+        //            transaction
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { message = ex.Message });
+        //    }
+        //}
+
+        [HttpPut("Renew/{transactionId}")]
+        [Authorize(Roles = "Admin,Librarian")]
+        public async Task<IActionResult> RenewLoan(int transactionId)
+        {
+            try
+            {
+                var transaction = await _transactionService.RenewLoanByTransactionIdAsync(transactionId);
+
+                if (transaction == null)
+                    return NotFound("Transaction not found or cannot be renewed.");
+
+                return Ok(new
+                {
+                    message = "Loan renewed successfully",
+                    transaction
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("ActiveLoans")]
         [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> GetActiveLoans([FromQuery] string? searchText, [FromQuery] string? status)
@@ -76,7 +128,6 @@ namespace LibraryBackend_CleanArchitecture.Controllers
             return Ok(result);
         }
 
-        
         [HttpGet("History")]
         [Authorize(Roles = "Admin,Librarian")]
         public async Task<IActionResult> GetTransactionHistory([FromQuery] string? searchText, [FromQuery] string? type)
@@ -86,7 +137,6 @@ namespace LibraryBackend_CleanArchitecture.Controllers
         }
     }
 
-    
     public class CheckoutRequest
     {
         public string MemberName { get; set; } = string.Empty;
@@ -97,6 +147,6 @@ namespace LibraryBackend_CleanArchitecture.Controllers
     public class ReturnRequest
     {
         public string Isbn { get; set; } = string.Empty;
-        public string MemberName { get; set; } = string.Empty; 
+        public string MemberName { get; set; } = string.Empty;
     }
 }

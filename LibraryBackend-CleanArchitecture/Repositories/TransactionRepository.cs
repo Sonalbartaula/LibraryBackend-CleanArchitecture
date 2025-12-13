@@ -20,6 +20,12 @@ namespace LibraryBackend_CleanArchitecture.Repositories
         {
             return await _context.Transactions.FirstOrDefaultAsync(book=>book.Isbn==isbn);
         }
+        
+        public async Task<Transaction?> GetByIdAsync(int id)
+        {
+            return await _context.Transactions
+                .FirstOrDefaultAsync(t => t.Id == id);
+        }
         public async Task AddAsync(Transaction transaction)
         {
             await _context.Transactions.AddAsync(transaction);
